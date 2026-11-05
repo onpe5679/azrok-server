@@ -1,0 +1,14 @@
+[Unit]
+Description=Cloudflare Tunnel for playazrok.com
+After=network-online.target azrok-web.service azrok-bridge.service
+Wants=azrok-web.service azrok-bridge.service
+
+[Service]
+Type=simple
+ExecStart=%h/32dev/azroksrv/bin/cloudflared tunnel --config %h/32dev/azroksrv/deploy/u32ws/cloudflared-config.yml run
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
+

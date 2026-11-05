@@ -1,0 +1,27 @@
+컴팩션/신규 세션 첫 시작시 직전 맥락을 유지하면서 계속 진행하라.
+[GOAL] 아즈로크 웹 이식 — 원본 바이너리를 브라우저에서 모든 렌더링 관련 기능 포함 원활히(전체 3D씬 평균 65fps 이상) 실행.
+늘 정적 및 동적분석 에이전트 또는 추가 필요 목적의 병렬 에이전트 병행. 필요시 문서화도 필수.
+
+★ 1단계는 반드시 "측정"이다. 단, 이전 세션에서 측정·확정된 것을 중복 측정하지 마라.
+docs/research/INDEX.md 가 진실의 지도다 — 새 조사 전 반드시 먼저 볼 것. 문서 249~285가 이미 존재하며 다음 문서 번호는 286부터.
+
+■ 게이트 1~3 : 완료 (D3D9 표면 실측 → BoxedWine WASM → d3d9web 브리지).
+■ 게이트 4 (현재) : 렌더/오디오/입력 버그 수정 완료. 최적화 진행 중 — 아래 "현재 상태" 참조.
+■ 게이트 5 : 로컬 멀티 세션 멀티플레이 — Plaza 상호 표시·이동 중계 검증 완료.
+■ 게이트 6 : 스마트폰 환경 가정 최적화 (데스크톱 65fps 달성 후).
+■ 게이트 7 : 내부망(192대역)+tailscale 한정 확장 서버 (공인IP serve 금지).
+
+■ 현재 상태 스냅샷 (모두 VERIFIED, 재측정 불필요)
+- 채택 스택(accepted stem = boxedwine.upstreamjit64fn6inlineabi2): -O3 / D3D 비동기 링(Present 파이프라이닝, 메인스레드 왕복 0회 실증) / 일반화 read-hot ZIP 캐시 / JIT record→replay + direct tail(next1+next2, +5.99%) / common dispatcher(외부 왕복 65.05배 감소) / depth-local(+5~10%) / fn6 inline(fetchNextOp 인라인, 문서274, C→Wasm 경계 제거 +20.8%) / publication guard(stale call 차단).
+- 현재 기준 성능: PatHouse 1024×768, 30초 누적 Present 기준 약 43~50 FPS (환경 따라 변동, 관측 최고 52.5). 65까지 남은 병목은 "대기"가 아니라 게스트 워커 CPU 실행(커널 대기 2.6ms/frame뿐, PC 샘플링상 워커 시간 67.7%가 동적 JIT 코드).
+- 진행 중(최우선): dual-entry register-threaded ABI — 블록 간 EAX~EDI 8개 GP의 CPU 메모리 왕복(31.7만 회/frame) 제거. THREADED_BODY_ABI 242개 오브젝트 전체 링크 성공, P0 3건(8-result 누락/bailout 후 stale GP/wrapper 인덱스) 수정 완료, 안전 store sinking 첫 게이트 통과(8 GP writeback edge만 제거, cold wrapper에서만 커밋), ABI 혼입 방지 로더 게이트 완료. 남은 것: 브라우저 실기동 게이트 + A-B-A.
+- 보류(판정 불가로 재측정 필요): parity popcnt 인라인 — 조건 helper 1,853만회/18.5초 중 P/NP 54.5%(MSVC x87 비교 정형 패턴), 검증 지표는 P/NP helper 호출 301/106 → 0/0. 직전 ABAB가 환경 드리프트(-11.9%)로 판정 불가였음.
+- 다음 후보 대기열: runtime-lazy Z/NZ 순수 Wasm 인라인 (패리티 판정 전 혼입 금지).
+- 유휴 슬롯 카드(빌드/재생성 대기 중에만): (1) Liftoff 갇힘 진단 — ChatGPT 앱 재시작 절대 금지, 별도 표준 Chrome/Edge 인스턴스로 동일 페이지를 기본 vs --js-flags="--no-liftoff"로 A/B. 크게 오르면 티어업 친화적 모듈 대형화가 최우선으로 승격. (2) -nosound A-B-A — 오디오 워커 합계 ~11.6 CPU-ms/frame 경쟁 검증. (+병행) PGO/-msimd128/-flto 저우선순위 백그라운드 재컴파일. ※ CCD 어피니티 진단은 사용자 결정으로 취소됨 — 하지 말 것.
+
+■ 운영 규칙 (전 세션 실측으로 확립)
+- 장기 서비스 셸은 정확히 1시간 제한으로 HTTP·브리지·게임 서버가 통째로 죽는다. 서비스(8765/9200/9201/9300)는 분리된 셸로 유지하고 자동 재기동을 갖출 것. 포그라운드 명령으로 완료 대기하며 세션을 블로킹하지 말 것.
+- 성능 판정은 A-B-A(30초 누적 Present, visible 필수, 로딩/선택 화면 제외), 애매하면 A-B-A-B 연장, 인접쌍 중앙값 ±3% 잡음대 기준. 캐시 생성/빌드 CPU가 도는 동안 FPS 표본 금지.
+- 탭 규칙: 일반 최대 1탭, 멀티 테스트만 2탭. 탭 교체 시 이전 렌더러 종료 확인.
+- 모든 후보는 fail-closed(ABI/manifest 불일치 시 로더 거부, 미완성 최적화는 기본 경로 오염 금지). 위험 최적화는 정적 감사 → 회귀 테스트 → cache-OFF 실게임 렌더 무결성 → 그 후에만 A-B-A.
+- 확정/기각 즉시 INDEX와 문서 갱신. 기각 시 원인 분석(적용 범위 정량 대조)까지.

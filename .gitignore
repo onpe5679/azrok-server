@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Runtime state, logs, captures (never published)
+/logs/
+/server_state/
+/captures/
+/captures_structured/
+/.runtime/
+/artifacts/
+*.token
+private_browser_accounts.json
+*.db
+*.db-journal
+
+# Secrets / infrastructure
+.env
+*.pem
+*.key
+cloudflared-config.yml
+.cloudflared/
+/bin/
+
+# Tool state
+.omc/
+.claude/
+.codex/
+.agents/
+.tmp_*/
+
+# Original client files and game data are not part of this repository
+/Azrok.dat
+/init.csv
+/lgc.tmp
+/sys.tmp
+/Data/
+/_Converted_*/
+*.exe
+*.dll
+*.obj
+*.gar
+*.wmb
+*.mdl
+*.pcx
+*.wis
+*.tga
+*.dds
+*.ogg
+*.mp3
+*.wmv
+*.mp4
+*.bmp
+
+# Vendored third-party packages (install with pip instead)
+/tools/bridge_pydeps/

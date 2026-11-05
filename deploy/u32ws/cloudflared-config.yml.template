@@ -1,0 +1,11 @@
+tunnel: REPLACE_TUNNEL_UUID
+credentials-file: /home/u32ws/.cloudflared/REPLACE_TUNNEL_UUID.json
+
+ingress:
+  - hostname: playazrok.com
+    path: ^/azrok-ws$
+    service: http://127.0.0.1:9201
+  - hostname: playazrok.com
+    service: http://127.0.0.1:8765
+  - service: http_status:404
+

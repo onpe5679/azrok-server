@@ -1,0 +1,14 @@
+[Unit]
+Description=Azrok preservation TCP core
+After=network-online.target
+Wants=azrok-bridge.service azrok-web.service
+
+[Service]
+Type=simple
+WorkingDirectory=%h/32dev/azroksrv
+ExecStart=/usr/bin/python3 -u tools/run_server_only.py --bind 127.0.0.1 --port 9200 --control-port 9300 --content-profile playable --access-secret-file logs/private_runtime_192.token
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target

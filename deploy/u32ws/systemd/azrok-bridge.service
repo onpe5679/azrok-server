@@ -1,0 +1,17 @@
+[Unit]
+Description=Azrok authenticated WebSocket to TCP bridge
+After=network-online.target azrok-core.service
+Requires=azrok-core.service
+PartOf=azrok-core.service
+
+[Service]
+Type=simple
+WorkingDirectory=%h/32dev/azroksrv
+Environment=PYTHONPATH=%h/32dev/azroksrv/tools/bridge_pydeps
+ExecStart=/usr/bin/python3 -u tools/ws_tcp_bridge.py --ws-host 127.0.0.1 --ws-port 9201 --tcp-host 127.0.0.1 --tcp-port 9200 --access-secret-file logs/private_runtime_192.token
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
+

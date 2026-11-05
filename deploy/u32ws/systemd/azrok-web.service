@@ -1,0 +1,16 @@
+[Unit]
+Description=Azrok browser assets and private account API
+After=network-online.target azrok-core.service
+Requires=azrok-core.service
+PartOf=azrok-core.service
+
+[Service]
+Type=simple
+WorkingDirectory=%h/32dev/azroksrv
+ExecStart=/usr/bin/python3 -u tools/boxedwine_local/server.py --bind 127.0.0.1 --port 8765 --root tools/boxedwine_local --access-secret-file logs/private_runtime_192.token --account-registry logs/private_browser_accounts.json
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
+

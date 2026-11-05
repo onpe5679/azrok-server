@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>아즈로크 서버 선택</title>
+  <link rel="icon" href="azrok.ico" type="image/x-icon">
+  <link rel="stylesheet" href="azrok_server_list.css?v=restore6">
+</head>
+<body class="server-page">
+  <main class="server-window" aria-labelledby="server-title">
+    <header><img class="server-logo-image" src="azrok_home_assets/azrok_loading_logo.png" alt="아즈로크"><div><h1 id="server-title">아즈로크 서버 선택</h1><p>접속할 광장 서버를 선택해 주세요.</p></div><img class="server-npc-image" src="azrok_home_assets/azrok_server_npc_010.png" alt="아즈로크 꿀벌 캐릭터"></header>
+    <section class="server-list" aria-label="서버 목록">
+      <div class="server-list-head"><span>서버명</span><span>상태</span><span>혼잡도</span></div>
+      <button type="button" id="preservation-server" class="server-row" autofocus>
+        <span><i></i><b>아즈로크 보존 광장</b><small>원본 클라이언트 · 사설 보존 서버 <span id="online-count" aria-live="polite">· 접속 인원 확인 중</span></small></span>
+        <strong>접속가능</strong>
+        <em><i></i><i></i><i></i><i></i><i></i></em>
+      </button>
+    </section>
+    <div class="server-help"><b>안내</b> 브라우저별 보존 계정과 안전한 접속 티켓을 준비한 뒤 원본 아즈로크를 실행합니다.</div>
+    <div id="launch-status" class="launch-status" role="status" aria-live="polite">서버를 선택하고 접속 버튼을 눌러 주세요.</div>
+    <div class="server-actions"><a href="/">돌아가기</a><button type="button" id="connect-button">선택 서버 접속</button></div>
+  </main>
+  <script src="azrok_launch.js?v=coldload2-20260927"></script>
+</body>
+</html>
